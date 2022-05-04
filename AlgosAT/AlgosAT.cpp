@@ -3,51 +3,13 @@
 
 #include <iostream>
 #include <string>
-#include "Stack.h"
+
+#include "Tests.h"
 
 int main()
 {
-	Stack<int> stack = Stack<int>(5);
-	bool stackIsEmpty = stack.isEmpty();
-	stack.display();
-	stack.push(10);
-	stackIsEmpty = stack.isEmpty();
-	stack.display();
-	stack.push(20);
-	stack.push(30);
-	stack.display();
-
-	stack.pop();
-	stack.pop();
-	int peek1 = stack.peek();
-
-	stack.pop();
-	stack.pop();
-
-	//stack.pop();
-	//int peek2 = stack.peek();
-	stack.display();
-
-	Stack<std::string> stack2 = Stack<std::string>("string 1");
-	bool stackIsEmpty2 = stack2.isEmpty();
-	stack2.display();
-	stack2.push("string 2");
-	stackIsEmpty2 = stack2.isEmpty();
-	stack2.display();
-	stack2.push("string 3");
-	stack2.push("string 4");
-	stack2.display();
-
-	stack2.pop();
-	stack2.pop();
-	//int peek2 = stack2.peek();
-
-	stack2.pop();
-	stack2.pop();
-
-	//stack.pop();
-	//int peek2 = stack.peek();
-	stack2.display();
+	Tests tests = Tests();
+	tests.runTests();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

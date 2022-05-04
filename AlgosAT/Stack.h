@@ -15,6 +15,7 @@ private:
 	};
 
 	Node* m_top = nullptr;
+	size_t m_size = 0;
 
 public:
 
@@ -27,6 +28,7 @@ public:
 	{
 		m_top = new Node();
 		m_top->data = data;
+		m_size++;
 	}
 
 	void push(T data)
@@ -42,6 +44,7 @@ public:
 		temp->next = m_top;
 
 		m_top = temp;
+		m_size++;
 	}
 
 	void pop()
@@ -58,6 +61,7 @@ public:
 			temp = m_top;
 			m_top = m_top->next;
 			free(temp);
+			m_size--;
 		}
 	}
 
@@ -76,7 +80,7 @@ public:
 		}
 	}
 
-	int peek()
+	T peek()
 	{
 		if (!isEmpty())
 		{
@@ -92,5 +96,10 @@ public:
 	bool isEmpty()
 	{
 		return m_top == nullptr;
+	}
+
+	size_t size() 
+	{
+		return m_size;
 	}
 };
