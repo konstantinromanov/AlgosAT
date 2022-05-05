@@ -13,8 +13,9 @@ private:
 	void printTestResult(const char* testName, bool assertValue)
 	{
 		std::cout
-			<< std::setw(55) << std::left << testName << ": "
+			<< std::setw(55) << std::left << std::string(testName) + ":"
 			<< std::setw(15) << std::right << (assertValue ? "passed" : "not passed") << std::endl;
+		std::cout << std::string(75, '-') << std::endl;
 	}
 
 public:
@@ -26,7 +27,7 @@ public:
 		push_pushDataToStack_notEmpty();
 		pop_popDataFromStackWithOneNode_empty();
 		peek_peekStack_topNodeData();
-		pop_popEmptyStack_exception();		
+		pop_popEmptyStack_exception();
 		size_pushDataToEmptyStack_one();
 		size_InstantiateStackWithData_one();
 		size_popDataFromStackWithOneNode_zero();
@@ -127,7 +128,7 @@ public:
 
 	void size_InstantiateStackWithData_one()
 	{
-		Stack<int> stack = Stack<int>(2);		
+		Stack<int> stack = Stack<int>(2);
 
 		bool sizeIsOne = stack.size() == 1;
 

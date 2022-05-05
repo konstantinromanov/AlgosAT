@@ -10,7 +10,7 @@ private:
 
 	struct Node
 	{
-		T data;
+		T data{};
 		Node* next = nullptr;
 	};
 

@@ -5,11 +5,23 @@
 #include <string>
 
 #include "Tests.h"
+#include "AvlTree.h"
 
 int main()
 {
+	AvlTree<int> tree = AvlTree<int>();
+	tree.insert(10);
+	tree.insert(20);
+	//tree.insert(5);
+	tree.insert(30);
+	tree.insert(40);
+	tree.insert(50);
+	tree.insert(25);
+
+	tree.preOrder();
+
 	Tests tests = Tests();
-	tests.runTests();
+	//tests.runTests();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
