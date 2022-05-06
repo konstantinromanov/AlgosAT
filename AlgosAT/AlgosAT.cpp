@@ -16,7 +16,15 @@ int main()
 	tree.insert(30);
 	tree.insert(40);
 	tree.insert(50);
-	tree.insert(25);
+	//tree.insert(25);
+
+	/*tree.insert(13);
+	tree.insert(10);
+	
+	tree.insert(11);
+	tree.insert(5);
+	tree.insert(4);
+	tree.insert(6);*/
 
 	tree.preOrder();
 

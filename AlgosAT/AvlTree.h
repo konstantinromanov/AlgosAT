@@ -19,6 +19,7 @@ private:
 	};
 
 	Node* m_root = nullptr;
+	std::vector<Node*> m_pathNodes;
 
 	void printPreorder(Node* node)
 	{
@@ -58,19 +59,62 @@ private:
 	void updateHeights(std::vector<Node*> pathNodes)
 	{
 		int pathLenght = pathNodes.size();
+		bool left;
 
 		for (size_t i = pathLenght - 1; i + 1 > 0; i--)
 		{
 			pathNodes[i]->height = maxHeight(pathNodes[i]->height, pathLenght - i);
+
+			int nodeBalance = getBalance(pathNodes[i]);
+
+			std::string rotation1;
+			//std::string rotation2;
+			//bool test;
+
+			if (nodeBalance < -1)
+			{
+				rotation1 = (pathNodes[i + 1]->left != nullptr && pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
+				//rotation1 = (pathNodes[i]->left->data == pathNodes[i + 1]->data ? "left" : "right");
+				//rotation2 = (pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
+			}
+			else if (nodeBalance > 1)
+			{
+				//test = (pathNodes[i + 1]->left );
+				//rotation1 = (pathNodes[i]->left != nullptr && pathNodes[i]->left->data == pathNodes[i + 1]->data ? "left" : "right");
+				rotation1 = (pathNodes[i + 1]->left != nullptr && pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
+			}
 		}
 	}
 
-	void placeLeaf(Node*& node, Node*& currentNode, Node*& leaf, std::vector<Node*>& pathNodes)
+	bool processChild(Node*& node, Node*& currentNode, Node*& child)
 	{
-		node->depth = currentNode->depth + 1;
-		leaf = node;
-		pathNodes.push_back(node);
-		updateHeights(pathNodes);
+		if (child == nullptr)
+		{
+			node->depth = currentNode->depth + 1;
+			child = node;
+			m_pathNodes.push_back(node);
+			updateHeights(m_pathNodes);
+
+			return true;
+		}
+
+		currentNode = child;
+
+		return false;
+	}
+
+	int getBalance(Node* node)
+	{
+		if (node == nullptr)
+		{
+			return 0;
+		}
+
+		int leftChildHeight = node->left == nullptr ? 0 : node->left->height;
+		int rightChildHeight = node->right == nullptr ? 0 : node->right->height;		
+
+		int result = rightChildHeight - leftChildHeight;
+		return result;
 	}
 
 public:
@@ -81,57 +125,30 @@ public:
 		node->depth = 1;
 		node->height = 1;
 		node->data = data;
-		std::vector<Node*> pathNodes;
+
+		m_pathNodes.clear();
 
 		if (m_root == nullptr)
 		{
 			node->left = nullptr;
 			node->right = nullptr;
-
 			m_root = node;
 		}
 		else
 		{
 			Node* currentNode = m_root;
+			bool isLeaf = false;
 
-			while (true)
+			while (!isLeaf)
 			{
-				pathNodes.push_back(currentNode);
+				m_pathNodes.push_back(currentNode);
 
-				if (data < currentNode->data)
+				if (data == currentNode->data)
 				{
-					if (currentNode->left == nullptr)
-					{
-						//node->depth = currentNode->depth + 1;
-						//currentNode->left = node;
-						//pathNodes.push_back(node);
-						//updateHeights(pathNodes);
-						placeLeaf(node, currentNode, currentNode->left, pathNodes);
-
-						break;
-					}
-
-					currentNode = currentNode->left;
+					break; // duplicates not allowed.
 				}
-				else if (data > currentNode->data)
-				{
-					if (currentNode->right == nullptr)
-					{
-						//node->depth = currentNode->depth + 1;
-						//currentNode->right = node;
-						//pathNodes.push_back(node);
-						//updateHeights(pathNodes);
-						placeLeaf(node, currentNode, currentNode->right, pathNodes);
 
-						break;
-					}
-
-					currentNode = currentNode->right;
-				}
-				else
-				{
-					break;
-				}
+				isLeaf = processChild(node, currentNode, (data < currentNode->data ? currentNode->left : currentNode->right));
 			}
 		}
 
