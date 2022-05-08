@@ -56,51 +56,9 @@ private:
 		return ((a > b) ? a : b);
 	}
 
-	void updateHeights(std::vector<Node*> pathNodes)
+	int getHeightOfNode(Node* node)
 	{
-		int pathLenght = pathNodes.size();
-		bool left;
-
-		for (size_t i = pathLenght - 1; i + 1 > 0; i--)
-		{
-			pathNodes[i]->height = maxHeight(pathNodes[i]->height, pathLenght - i);
-
-			int nodeBalance = getBalance(pathNodes[i]);
-
-			std::string rotation1;
-			//std::string rotation2;
-			//bool test;
-
-			if (nodeBalance < -1)
-			{
-				rotation1 = (pathNodes[i + 1]->left != nullptr && pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
-				//rotation1 = (pathNodes[i]->left->data == pathNodes[i + 1]->data ? "left" : "right");
-				//rotation2 = (pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
-			}
-			else if (nodeBalance > 1)
-			{
-				//test = (pathNodes[i + 1]->left );
-				//rotation1 = (pathNodes[i]->left != nullptr && pathNodes[i]->left->data == pathNodes[i + 1]->data ? "left" : "right");
-				rotation1 = (pathNodes[i + 1]->left != nullptr && pathNodes[i + 1]->left->data == pathNodes[i + 2]->data ? "left" : "right");
-			}
-		}
-	}
-
-	bool processChild(Node*& node, Node*& currentNode, Node*& child)
-	{
-		if (child == nullptr)
-		{
-			node->depth = currentNode->depth + 1;
-			child = node;
-			m_pathNodes.push_back(node);
-			updateHeights(m_pathNodes);
-
-			return true;
-		}
-
-		currentNode = child;
-
-		return false;
+		return (node != nullptr ? node->height : 0);
 	}
 
 	int getBalance(Node* node)
@@ -111,10 +69,118 @@ private:
 		}
 
 		int leftChildHeight = node->left == nullptr ? 0 : node->left->height;
-		int rightChildHeight = node->right == nullptr ? 0 : node->right->height;		
+		int rightChildHeight = node->right == nullptr ? 0 : node->right->height;
 
-		int result = rightChildHeight - leftChildHeight;
-		return result;
+		return rightChildHeight - leftChildHeight;
+	}
+
+	bool processChild(Node*& node, Node*& currentNode, Node*& child)
+	{
+		if (child == nullptr)
+		{
+			node->depth = currentNode->depth + 1;
+			child = node;
+			m_pathNodes.push_back(node);
+			updateHeights();
+
+			return true;
+		}
+
+		currentNode = child;
+
+		return false;
+	}	
+		
+	void updateHeights()
+	{
+		int pathLenght = m_pathNodes.size();
+		int prevNodeBalance = 0;
+		int nodeBalance = 0;
+
+		for (size_t i = pathLenght - 1; i + 1 > 0; i--)
+		{
+			m_pathNodes[i]->height = maxHeight(m_pathNodes[i]->height, pathLenght - i);
+
+			nodeBalance = getBalance(m_pathNodes[i]);
+
+			if (nodeBalance < -1 || nodeBalance > 1)
+			{
+				processBalancing(i, (nodeBalance + prevNodeBalance));
+			}
+
+			prevNodeBalance = nodeBalance;
+		}
+	}
+		
+	void processBalancing(int node, int rotation)
+	{
+		switch (rotation)
+		{
+		case -3: // left left case. 
+			rotateRight(node);
+			break;
+		case -1: // left right case. 
+			rotateLeft(node + 1, true);
+			rotateRight(node);
+			break;
+		case 3: // right right case. 
+			rotateLeft(node);
+			break;
+		case 1: // right left case. 
+			rotateRight(node + 1, true);
+			rotateLeft(node);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void rotateLeft(int i, bool isLeftRight = false)
+	{
+		Node* y = m_pathNodes[i]->right;
+		Node* T2 = y->left;
+		y->left = m_pathNodes[i];
+		m_pathNodes[i]->right = T2;
+
+		if (i == 0)
+		{
+			m_root = y;
+		}
+		else if (isLeftRight)
+		{
+			m_pathNodes[i - 1]->left = y;
+		}
+		else
+		{
+			m_pathNodes[i - 1]->right = y;
+		}
+
+		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
+		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
+	}
+		
+	void rotateRight(int i, bool isRightLeft = false)
+	{
+		Node* y = m_pathNodes[i]->left;
+		Node* T3 = y->right;
+		y->right = m_pathNodes[i];
+		m_pathNodes[i]->left = T3;
+
+		if (i == 0)
+		{
+			m_root = y;
+		}
+		else if (isRightLeft)
+		{
+			m_pathNodes[i - 1]->right = y;
+		}
+		else
+		{
+			m_pathNodes[i - 1]->left = y;
+		}
+
+		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
+		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 	}
 
 public:
@@ -125,8 +191,6 @@ public:
 		node->depth = 1;
 		node->height = 1;
 		node->data = data;
-
-		m_pathNodes.clear();
 
 		if (m_root == nullptr)
 		{
@@ -150,10 +214,9 @@ public:
 
 				isLeaf = processChild(node, currentNode, (data < currentNode->data ? currentNode->left : currentNode->right));
 			}
+
+			m_pathNodes.clear();
 		}
-
-
-
 	}
 
 	void preOrder()
