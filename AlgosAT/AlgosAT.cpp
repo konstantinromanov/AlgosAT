@@ -10,13 +10,13 @@
 int main()
 {
 	AvlTree<int> tree = AvlTree<int>();
-	tree.insert(10);
-	tree.insert(20);
+	/*tree.insert(10);*/
+	//tree.insert(20);
 	//tree.insert(5);
-	tree.insert(30);
-	tree.insert(40);
-	tree.insert(50);
-	tree.insert(25);
+	//tree.insert(30);
+	//tree.insert(40);
+	//tree.insert(50);
+	//tree.insert(25);
 
 	//tree.insert(13);
 	//tree.insert(10);
@@ -26,10 +26,37 @@ int main()
 	//tree.insert(4);
 	//tree.insert(6);
 
-	tree.preOrder();
+	/*tree.insert(10);
+	tree.insert(20);
+	tree.insert(30);
+	tree.insert(40);
+	tree.remove(30);*/
+
+	/*tree.insert(10);
+	tree.insert(20);
+	tree.insert(30);
+	tree.insert(40);
+	tree.insert(25);
+	tree.remove(20);*/
+
+	/*tree.insert(10);
+	tree.insert(20);
+	tree.insert(30);
+	tree.insert(40);
+	tree.insert(25);
+	tree.remove(25);*/
+
+	/*tree.insert(10);
+	tree.insert(20);
+	tree.insert(30);
+	tree.insert(40);
+	tree.insert(25);
+	tree.remove(30);*/
+
+	//tree.preOrder();
 
 	Tests tests = Tests();
-	//tests.runTests();
+	tests.runTests();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

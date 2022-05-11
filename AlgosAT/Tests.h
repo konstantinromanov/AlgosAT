@@ -4,6 +4,7 @@
 #include <utility>
 #include <string>
 #include "Stack.h"
+#include "AvlTree.h"
 
 class Tests
 {
@@ -31,6 +32,10 @@ public:
 		size_pushDataToEmptyStack_one();
 		size_InstantiateStackWithData_one();
 		size_popDataFromStackWithOneNode_zero();
+
+		remove_removeNodeWithTwoChildren_preorderTree();
+		remove_removeNodeWithNoChildren_preorderTree();
+		remove_removeRootNodeWithTwoChildren_preorderTree();
 	}
 
 	void isEmpty_noDataInstack_true()
@@ -143,6 +148,54 @@ public:
 		bool sizeIsZero = stack.size() == 0;
 
 		printTestResult(__func__, sizeIsZero);
+	}
+
+	void remove_removeNodeWithTwoChildren_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+		tree.insert(10);
+		tree.insert(20);
+		tree.insert(30);
+		tree.insert(40);
+		tree.insert(25);
+		tree.remove(30);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "20 10 40 25 ";
+
+		printTestResult(__func__, treeIsCorrect);
+	}
+
+	void remove_removeNodeWithNoChildren_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+		tree.insert(10);
+		tree.insert(20);
+		tree.insert(30);
+		tree.insert(40);
+		tree.insert(25);
+		tree.remove(25);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "20 10 30 40 ";
+
+		printTestResult(__func__, treeIsCorrect);
+	}
+
+	void remove_removeRootNodeWithTwoChildren_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+		tree.insert(10);
+		tree.insert(20);
+		tree.insert(30);
+		tree.insert(40);
+		tree.insert(25);
+		tree.remove(20);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "25 10 30 40 ";
+
+		printTestResult(__func__, treeIsCorrect);
 	}
 };
 
