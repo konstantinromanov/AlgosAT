@@ -161,6 +161,7 @@ public:
 		tree.remove(30);
 
 		std::string treePreorder = tree.preOrder();
+		
 		bool treeIsCorrect = treePreorder == "20 10 40 25 ";
 
 		printTestResult(__func__, treeIsCorrect);
