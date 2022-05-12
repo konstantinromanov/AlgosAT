@@ -17,7 +17,6 @@ private:
 		Node* left = nullptr;
 		Node* right = nullptr;
 		int height{ 0 };
-		int depth{ 0 };
 	};
 
 	Node* m_root = nullptr;
@@ -26,7 +25,7 @@ private:
 	void printPreorder(Node* node, std::string& output)
 	{
 		if (node != nullptr)
-		{			
+		{
 			std::stringstream ss("");
 			ss << node->data;
 			output.append(ss.str() + " ");
@@ -54,7 +53,7 @@ private:
 			printInorder(node->left, output);
 			std::stringstream ss("");
 			ss << node->data;
-			output.append(ss.str() + " ");			
+			output.append(ss.str() + " ");
 			printInorder(node->right, output);
 		}
 	}
@@ -76,28 +75,21 @@ private:
 			return 0;
 		}
 
-		int leftChildHeight = node->left == nullptr ? 0 : node->left->height;
-		int rightChildHeight = node->right == nullptr ? 0 : node->right->height;
-
-		return rightChildHeight - leftChildHeight;
+		return getHeightOfNode(node->right) - getHeightOfNode(node->left);
 	}
 
-	bool processChild(Node*& node, Node*& currentNode, Node*& child)
+	void processChild(Node*& node, Node*& currentNode, Node*& child)
 	{
-		if (child == nullptr)
-		{
-			node->depth = currentNode->depth + 1;
-			child = node;
-			m_pathNodes.push_back(node);
-			updateHeights();
-
-			return true;
-		}
-
-		currentNode = child;
-
-		return false;
+		child = node;
+		m_pathNodes.push_back(node);
+		updateHeights();
 	}
+
+	enum class Direction
+	{
+		Left,
+		Right
+	};
 
 	void updateHeights()
 	{
@@ -107,36 +99,64 @@ private:
 
 		for (size_t i = pathLenght - 1; i + 1 > 0; i--)
 		{
-			m_pathNodes[i]->height = maxHeight(m_pathNodes[i]->height, pathLenght - i);
+			m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
 
 			nodeBalance = getBalance(m_pathNodes[i]);
 
-			if (nodeBalance < -1 || nodeBalance > 1)
+			if (nodeBalance < -1)
 			{
-				processBalancing(i, (nodeBalance + prevNodeBalance));
+				processBalancing(i, getRotationType(m_pathNodes[i], Direction::Left));
+			}
+			else if (nodeBalance > 1)
+			{
+				processBalancing(i, getRotationType(m_pathNodes[i], Direction::Right));
 			}
 
 			prevNodeBalance = nodeBalance;
 		}
 	}
 
-	void processBalancing(int node, int rotation)
+	enum class RotationType
+	{
+		LeftLeft,
+		LeftRight,
+		RightRight,
+		RightLeft
+	};
+
+	RotationType getRotationType(Node* node, Direction direction)
+	{
+		RotationType output;
+
+		if (direction == Direction::Left)
+		{
+			output = getBalance(node->left) <= 0 ? RotationType::LeftLeft : RotationType::LeftRight;
+		}
+		else
+		{
+			output = getBalance(node->right) >= 0 ? RotationType::RightRight : RotationType::RightLeft;
+		}
+
+		return output;
+	}
+
+	void processBalancing(int node, RotationType rotation)
 	{
 		switch (rotation)
 		{
-		case -3: // left left case. 
-			rotateRight(node);			
+		case RotationType::LeftLeft: // left left case. 
+			rotateRight(node);
 			break;
-		case -1: // left right case. 
+		case RotationType::LeftRight: // left right case. 
 			rotateLeft(node + 1, true);
-			rotateRight(node);			
+			rotateRight(node);
 			break;
-		case 3: // right right case. 
-			rotateLeft(node);			
+		case RotationType::RightRight: // right right case. 
+			rotateLeft(node);
 			break;
-		case 1: // right left case. 
+		case RotationType::RightLeft: // right left case. 
 			rotateRight(node + 1, true);
-			rotateLeft(node);			
+			rotateLeft(node);
 			break;
 		default:
 			break;
@@ -216,18 +236,12 @@ private:
 		m_pathNodes[removedNodeIndex]->data = currentNode->data;
 	}
 
-	enum ChildrenType
+	enum class ChildrenType
 	{
 		NoChildren,
 		LeftChild,
 		RightChild,
 		TwoChildren
-	};
-
-	enum Direction
-	{
-		left,
-		right
 	};
 
 	void processNodeWithNoChildren(Node*& currentNode) {
@@ -262,7 +276,7 @@ private:
 	void moveToNextNode(Node*& currentNode, Direction direction)
 	{
 		m_pathNodes.push_back(currentNode);
-		currentNode = direction == left ? currentNode->left : currentNode->right;
+		currentNode = direction == Direction::Left ? currentNode->left : currentNode->right;
 	}
 
 	ChildrenType getNodeType(Node* currentNode)
@@ -271,19 +285,19 @@ private:
 
 		if (currentNode->left == nullptr && currentNode->right == nullptr)
 		{
-			output = NoChildren;
+			output = ChildrenType::NoChildren;
 		}
 		else if (currentNode->left == nullptr)
 		{
-			output = RightChild;
+			output = ChildrenType::RightChild;
 		}
 		else if (currentNode->right == nullptr)
 		{
-			output = LeftChild;
+			output = ChildrenType::LeftChild;
 		}
 		else
 		{
-			output = TwoChildren;
+			output = ChildrenType::TwoChildren;
 		}
 
 		return output;
@@ -294,7 +308,6 @@ public:
 	void insert(T data)
 	{
 		Node* node = new Node();
-		node->depth = 1;
 		node->height = 1;
 		node->data = data;
 
@@ -318,7 +331,17 @@ public:
 					break; // duplicates not allowed.
 				}
 
-				isLeaf = processChild(node, currentNode, (data < currentNode->data ? currentNode->left : currentNode->right));
+				Node*& child = data < currentNode->data ? currentNode->left : currentNode->right;
+
+				if (child == nullptr)
+				{
+					processChild(node, currentNode, child);
+					isLeaf = true;
+				}
+				else
+				{
+					currentNode = child;
+				}
 			}
 
 			m_pathNodes.clear();
@@ -339,26 +362,26 @@ public:
 		{
 			if (data < currentNode->data && currentNode->left != nullptr)
 			{
-				moveToNextNode(currentNode, left);
+				moveToNextNode(currentNode, Direction::Left);
 			}
 			else if (data > currentNode->data && currentNode->right != nullptr)
 			{
-				moveToNextNode(currentNode, right);
+				moveToNextNode(currentNode, Direction::Right);
 			}
 			else if (data == currentNode->data)
 			{
 				switch (getNodeType(currentNode))
 				{
-				case NoChildren:
+				case ChildrenType::NoChildren:
 					processNodeWithNoChildren(currentNode);
 					break;
-				case LeftChild:
+				case ChildrenType::LeftChild:
 					processNodeWithLeftChild(currentNode);
 					break;
-				case RightChild:
+				case ChildrenType::RightChild:
 					processNodeWithRightChild(currentNode);
 					break;
-				case TwoChildren:
+				case ChildrenType::TwoChildren:
 					processTwoChildrenNode(currentNode);
 					break;
 				}
@@ -371,6 +394,7 @@ public:
 			}
 		}
 
+		updateHeights();
 		m_pathNodes.clear();
 	}
 
@@ -378,7 +402,7 @@ public:
 	{
 		std::string output;
 		printPreorder(m_root, output);
-		
+
 		return output;
 	}
 
@@ -394,7 +418,7 @@ public:
 	{
 		std::string output;
 		printInorder(m_root, output);
-		
+
 		return output;
 	}
 };
