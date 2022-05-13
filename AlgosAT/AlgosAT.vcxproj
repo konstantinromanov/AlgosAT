@@ -142,12 +142,14 @@
     <ClCompile Include="AlgosAT.cpp" />
     <ClCompile Include="AvlTree.cpp" />
     <ClCompile Include="Stack.cpp" />
-    <ClCompile Include="Tests.cpp" />
+    <ClCompile Include="TestsAvlTree.cpp" />
+    <ClCompile Include="TestsStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AvlTree.h" />
     <ClInclude Include="Stack.h" />
-    <ClInclude Include="Tests.h" />
+    <ClInclude Include="TestsAvlTree.h" />
+    <ClInclude Include="TestsStack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,10 +21,13 @@
     <ClCompile Include="Stack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tests.cpp">
+    <ClCompile Include="TestsAvlTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AvlTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestsStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +35,13 @@
     <ClInclude Include="Stack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tests.h">
+    <ClInclude Include="TestsAvlTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AvlTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestsStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -234,6 +234,7 @@ private:
 		}
 
 		m_pathNodes[removedNodeIndex]->data = currentNode->data;
+		delete currentNode;
 	}
 
 	enum class ChildrenType
@@ -261,16 +262,20 @@ private:
 				m_pathNodes[m_pathNodes.size() - 1]->left = nullptr;
 			}
 		}
+
+		delete currentNode;
 	}
 
 	void processNodeWithLeftChild(Node*& currentNode)
 	{
 		m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
+		delete currentNode;
 	}
 
 	void processNodeWithRightChild(Node*& currentNode)
 	{
 		m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
+		delete currentNode;
 	}
 
 	void moveToNextNode(Node*& currentNode, Direction direction)
@@ -395,6 +400,7 @@ public:
 		}
 
 		updateHeights();
+
 		m_pathNodes.clear();
 	}
 
