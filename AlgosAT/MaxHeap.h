@@ -11,7 +11,7 @@ private:
 
 	int m_capacity{};
 	T* m_heap;
-	int m_position{ 0 };
+	int m_nextPosition{ 0 };
 
 	int getLeftPosition(int position)
 	{
@@ -51,11 +51,16 @@ private:
 
 		while (true)
 		{
-			if (leftChildPosition < m_position && m_heap[leftChildPosition] > m_heap[position])
+			if ((leftChildPosition < m_nextPosition && m_heap[leftChildPosition] > m_heap[position])
+				&& (rightChildPosition < m_nextPosition && m_heap[rightChildPosition] > m_heap[position]))
+			{
+				childPosition = leftChildPosition > rightChildPosition ? leftChildPosition : rightChildPosition;
+			}
+			else if (leftChildPosition < m_nextPosition && m_heap[leftChildPosition] > m_heap[position])
 			{
 				childPosition = leftChildPosition;
 			}
-			else if (rightChildPosition < m_position && m_heap[rightChildPosition] > m_heap[position])
+			else if (rightChildPosition < m_nextPosition && m_heap[rightChildPosition] > m_heap[position])
 			{
 				childPosition = rightChildPosition;
 			}
@@ -99,48 +104,50 @@ public:
 
 	void insert(T data)
 	{
-		if (m_position == m_capacity)
+		if (m_nextPosition == m_capacity)
 		{
 			throw std::out_of_range("Heap is full");
 		}
 
-		m_heap[m_position] = data;
+		m_heap[m_nextPosition] = data;
 
-		if (m_position > 0 && m_heap[getParentPosition(m_position)] < data)
+		if (m_nextPosition > 0 && m_heap[getParentPosition(m_nextPosition)] < data)
 		{
-			moveUp(m_position);
+			moveUp(m_nextPosition);
 		}
 
-		m_position++;
+		m_nextPosition++;
 	}
 
 	void remove(T data)
 	{
-		T lastData = m_heap[m_position - 1];
+		T lastData = m_heap[m_nextPosition - 1];
 		int deletedPosition{};
 
-		for (size_t i = 0; i < m_position; i++)
+		for (size_t i = 0; i < m_nextPosition; i++)
 		{
 			if (m_heap[i] == data)
 			{
 				m_heap[i] = lastData;
 				deletedPosition = i;
-				m_position--;
+				m_nextPosition--;
 
 				break;
 			}
 		}
 
-		int parentPosition = getParentPosition(deletedPosition);
-
-		if (m_heap[parentPosition] < m_heap[deletedPosition])
+		if (deletedPosition < m_nextPosition / 2) // if not leaf nodes, then proceed with check.
 		{
-			moveUp(deletedPosition);
-		}
+			int parentPosition = getParentPosition(deletedPosition);
 
-		if (deletedPosition < m_position / 2) // if not leaf nodes, then proceed with check.
-		{
-			moveDown(deletedPosition);
+			if (m_heap[parentPosition] < m_heap[deletedPosition])
+			{
+				moveUp(deletedPosition);
+			}
+			else
+			{
+				moveDown(deletedPosition);
+			}
 		}
 	}
 
@@ -149,7 +156,7 @@ public:
 		std::stringstream ss("");
 		std::string result;
 
-		for (size_t i = 0; i < m_position; i++)
+		for (size_t i = 0; i < m_nextPosition; i++)
 		{
 			ss << m_heap[i] << ' ';
 		}
@@ -166,7 +173,7 @@ public:
 
 	int size()
 	{
-		return m_position;
+		return m_nextPosition;
 	}
 };
 

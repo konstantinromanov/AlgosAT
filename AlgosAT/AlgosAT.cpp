@@ -8,6 +8,7 @@
 #include "AvlTree.h"
 #include "TestsStack.h"
 #include "MaxHeap.h"
+#include "TestsMaxHeap.h"
 
 int main()
 {
@@ -31,14 +32,16 @@ int main()
 	heap.insert(2);
 	heap.insert(15);*/
 
-	int arr[] = { 73, 6, 57, 88, 60, 42, 83, 72, 48, 85, 5 };
+	/*int arr[] = { 73, 6, 57, 88, 60, 42, 83, 72, 48, 85, 5 };
 	int size = sizeof(arr) / sizeof(arr[0]);
 	MaxHeap<int> heap = MaxHeap<int>(arr, size, 11);
 	std::string heapArr = heap.toString();
 
 	heap.remove(73);
-	std::string heapArr2 = heap.toString();
+	std::string heapArr2 = heap.toString();*/
 
+	TestsMaxHeap testsMaxHeap = TestsMaxHeap();
+	testsMaxHeap.runTests();
 
 	//TestsStack testsStack = TestsStack();
 	//TestsAvlTree testsAvlTree = TestsAvlTree();
