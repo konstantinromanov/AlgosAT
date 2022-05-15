@@ -7,14 +7,37 @@
 #include "TestsAvlTree.h"
 #include "AvlTree.h"
 #include "TestsStack.h"
+#include "MaxHeap.h"
 
 int main()
 {	
-	TestsStack testsStack = TestsStack();
-	TestsAvlTree testsAvlTree = TestsAvlTree();
+	MaxHeap<int> heap = MaxHeap<int>(10);
 
-	testsStack.runTests();
-	testsAvlTree.runTests();
+	heap.insert(73);
+	heap.insert(6);
+	heap.insert(57);
+	heap.insert(88);
+	heap.insert(60);
+	heap.insert(42);
+	heap.insert(83);
+	heap.insert(72);
+	heap.insert(48);
+	heap.insert(85);
+
+	/*heap.insert(9);
+	heap.insert(5);
+	heap.insert(6);
+	heap.insert(3);
+	heap.insert(2);
+	heap.insert(15);*/
+
+	std::string heapArr = heap.toString();
+
+	//TestsStack testsStack = TestsStack();
+	//TestsAvlTree testsAvlTree = TestsAvlTree();
+
+	//testsStack.runTests();
+	//testsAvlTree.runTests();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
