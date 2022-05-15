@@ -16,7 +16,7 @@ private:
 		T data{};
 		Node* left = nullptr;
 		Node* right = nullptr;
-		int height{ 0 };
+		int height{ 1 };
 	};
 
 	Node* m_root = nullptr;
@@ -26,9 +26,7 @@ private:
 	{
 		if (node != nullptr)
 		{
-			std::stringstream ss("");
-			ss << node->data;
-			output.append(ss.str() + " ");
+			output.append(toString(node->data) + " ");
 			printPreorder(node->left, output);
 			printPreorder(node->right, output);
 		}
@@ -40,9 +38,7 @@ private:
 		{
 			printPostorder(node->left, output);
 			printPostorder(node->right, output);
-			std::stringstream ss("");
-			ss << node->data;
-			output.append(ss.str() + " ");
+			output.append(toString(node->data) + " ");
 		}
 	}
 
@@ -52,11 +48,16 @@ private:
 		{
 			printInorder(node->left, output);
 			std::stringstream ss("");
-			ss << node->data;
-			output.append(ss.str() + " ");
-			printInorder(node->right, output);
+			output.append(toString(node->data) + " ");
 		}
 	}
+
+	std::string toString(T val)
+	{
+		std::stringstream ss("");
+		ss << val;
+		return ss.str();
+	};
 
 	int maxHeight(int a, int b)
 	{
@@ -78,11 +79,10 @@ private:
 		return getHeightOfNode(node->right) - getHeightOfNode(node->left);
 	}
 
-	void processChild(Node*& node, Node*& currentNode, Node*& child)
+	void processChild(Node*& node, Node*& child)
 	{
 		child = node;
 		m_pathNodes.push_back(node);
-		updateHeights();
 	}
 
 	enum class Direction
@@ -268,13 +268,29 @@ private:
 
 	void processNodeWithLeftChild(Node*& currentNode)
 	{
-		m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
+		if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+		{
+			m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
+		}
+		else
+		{
+			m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->left;
+		}
+
 		delete currentNode;
 	}
 
 	void processNodeWithRightChild(Node*& currentNode)
 	{
-		m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
+		if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+		{
+			m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->right;
+		}
+		else
+		{
+			m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
+		}
+
 		delete currentNode;
 	}
 
@@ -313,13 +329,10 @@ public:
 	void insert(T data)
 	{
 		Node* node = new Node();
-		node->height = 1;
 		node->data = data;
 
 		if (m_root == nullptr)
 		{
-			node->left = nullptr;
-			node->right = nullptr;
 			m_root = node;
 		}
 		else
@@ -340,7 +353,8 @@ public:
 
 				if (child == nullptr)
 				{
-					processChild(node, currentNode, child);
+					processChild(node, child);
+					updateHeights();
 					isLeaf = true;
 				}
 				else
@@ -391,6 +405,7 @@ public:
 					break;
 				}
 
+				updateHeights();
 				isLeaf = true;
 			}
 			else
@@ -399,8 +414,6 @@ public:
 			}
 		}
 
-		updateHeights();
-
 		m_pathNodes.clear();
 	}
 
@@ -408,6 +421,7 @@ public:
 	{
 		std::string output;
 		printPreorder(m_root, output);
+		output.pop_back();
 
 		return output;
 	}
@@ -416,6 +430,7 @@ public:
 	{
 		std::string output;
 		printPostorder(m_root, output);
+		output.pop_back();
 
 		return output;
 	}
@@ -424,6 +439,7 @@ public:
 	{
 		std::string output;
 		printInorder(m_root, output);
+		output.pop_back();
 
 		return output;
 	}
