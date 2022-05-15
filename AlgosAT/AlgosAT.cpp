@@ -10,19 +10,19 @@
 #include "MaxHeap.h"
 
 int main()
-{	
-	MaxHeap<int> heap = MaxHeap<int>(10);
+{
+	//MaxHeap<int> heap = MaxHeap<int>(10);
 
-	heap.insert(73);
-	heap.insert(6);
-	heap.insert(57);
-	heap.insert(88);
-	heap.insert(60);
-	heap.insert(42);
-	heap.insert(83);
-	heap.insert(72);
-	heap.insert(48);
-	heap.insert(85);
+	//heap.insert(73);
+	//heap.insert(6);
+	//heap.insert(57);
+	//heap.insert(88);
+	//heap.insert(60);
+	//heap.insert(42);
+	//heap.insert(83);
+	//heap.insert(72);
+	//heap.insert(48);
+	//heap.insert(85);
 
 	/*heap.insert(9);
 	heap.insert(5);
@@ -31,7 +31,14 @@ int main()
 	heap.insert(2);
 	heap.insert(15);*/
 
+	int arr[] = { 73, 6, 57, 88, 60, 42, 83, 72, 48, 85, 5 };
+	int size = sizeof(arr) / sizeof(arr[0]);
+	MaxHeap<int> heap = MaxHeap<int>(arr, size, 11);
 	std::string heapArr = heap.toString();
+
+	heap.remove(73);
+	std::string heapArr2 = heap.toString();
+
 
 	//TestsStack testsStack = TestsStack();
 	//TestsAvlTree testsAvlTree = TestsAvlTree();
