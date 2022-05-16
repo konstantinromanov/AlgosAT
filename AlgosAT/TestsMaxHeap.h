@@ -3,6 +3,58 @@
 #include <iostream>
 #include "MaxHeap.h"
 
+
+template<typename T>
+class ValidationHelper
+{
+
+public:
+
+	bool validateMaxHeap(MaxHeap<T> heap)
+	{
+		bool heapIsCorrect = true;
+
+		int leftChildPosition{ 1 };
+		int rightChildPosition{ 2 };
+		int counter = 0;
+
+		while (leftChildPosition < heap.size() && rightChildPosition < heap.size())
+		{
+
+			T test1 = heap[counter];
+			T test2 = heap[leftChildPosition];
+			T test3 = heap[rightChildPosition];
+			if (heap[counter] < heap[leftChildPosition] || heap[counter] < heap[rightChildPosition])
+			{
+				heapIsCorrect = false;
+				break;
+			}
+
+			counter++;
+			leftChildPosition = counter * 2 + 1;
+			rightChildPosition = counter * 2 + 2;
+		}
+
+		return heapIsCorrect;
+	}
+
+	T findMax(T* arr, int size)
+	{
+		int max = arr[0];
+
+		for (size_t i = 0; i < size; i++)
+		{
+			if (max < arr[i])
+			{
+				max = arr[i];
+			}
+		}
+
+		return max;
+	}
+};
+
+
 class TestsMaxHeap
 {
 
@@ -25,6 +77,8 @@ public:
 		remove_initializeHeapWithConstructorAndRemoveElement1_toString();
 		remove_initializeHeapWithConstructorAndRemoveElement2_toString();
 		initializeHeapWithConstructorAndRemoveElement_toString();
+		initializeHeapWithConstructor_fillRandomArray_validateArr();
+		getMax_fillRandomArray_firstElementMustBeMax();
 	}
 
 	void insert_insertElementsIntoHeap1_toString()
@@ -99,11 +153,51 @@ public:
 	{
 		int arr[] = { 1, 5, 7, 4, 2, 6, 3 };
 		int size = sizeof(arr) / sizeof(arr[0]);
-		MaxHeap<int> heap = MaxHeap<int>(arr, size, 50);		
+		MaxHeap<int> heap = MaxHeap<int>(arr, size, 50);
 
 		std::string heapArr = heap.toString();
 
 		bool heapIsCorrect = heapArr == "7 4 6 1 2 5 3";
+
+		printTestResult(__func__, heapIsCorrect);
+	}
+
+	void initializeHeapWithConstructor_fillRandomArray_validateArr()
+	{
+		const int arrSize = 1000;
+		int arr[arrSize];
+		srand(time(0));
+
+		for (size_t i = 0; i < arrSize; i++)
+		{
+			arr[i] = rand();
+		}		
+
+		MaxHeap<int> heap = MaxHeap<int>(arr, arrSize, arrSize);		
+		ValidationHelper<int> validation = ValidationHelper<int>();
+
+		bool heapIsCorrect = validation.validateMaxHeap(heap);		
+
+		printTestResult(__func__, heapIsCorrect);
+	}
+
+	void getMax_fillRandomArray_firstElementMustBeMax()
+	{
+		const int arrSize = 1000;
+		int arr[arrSize];
+		srand(time(0));
+
+		for (size_t i = 0; i < arrSize; i++)
+		{
+			arr[i] = rand();
+		}
+
+		ValidationHelper<int> validation = ValidationHelper<int>();
+		MaxHeap<int> heap = MaxHeap<int>(arr, arrSize, arrSize);
+
+		int maxVal = heap.getMax();
+
+		bool heapIsCorrect = validation.findMax(arr, arrSize) == maxVal;
 
 		printTestResult(__func__, heapIsCorrect);
 	}

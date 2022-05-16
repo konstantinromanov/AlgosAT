@@ -34,49 +34,56 @@ private:
 
 		while (m_heap[parentPosition] < m_heap[position])
 		{
-			T temp = m_heap[parentPosition];
-			m_heap[parentPosition] = m_heap[position];
-			m_heap[position] = temp;
-
+			swapValues(parentPosition, position);
 			position = parentPosition;
 			parentPosition = getParentPosition(parentPosition);
 		}
 	}
 
-	void moveDown(int position)
+	void swapValues(int a, int b)
 	{
+		T temp = m_heap[a];
+		m_heap[a] = m_heap[b];
+		m_heap[b] = temp;
+	}
+
+	bool positionOfMaxChild(int position, int& childPosition)
+	{
+		bool result = true;
 		int leftChildPosition = getLeftPosition(position);
 		int rightChildPosition = getRightPosition(position);
+
+		bool leftIsPossible = leftChildPosition < size() && m_heap[leftChildPosition] > m_heap[position];
+		bool rightIsPossible = rightChildPosition < size() && m_heap[rightChildPosition] > m_heap[position];
+
+		if (leftIsPossible && rightIsPossible)
+		{
+			childPosition = m_heap[leftChildPosition] > m_heap[rightChildPosition] ? leftChildPosition : rightChildPosition;
+		}
+		else if (leftIsPossible)
+		{
+			childPosition = leftChildPosition;
+		}
+		else if (rightIsPossible)
+		{
+			childPosition = rightChildPosition;
+		}
+		else
+		{
+			result = false;
+		}
+
+		return result;
+	}
+
+	void moveDown(int position)
+	{
 		int childPosition;
 
-		while (true)
+		while (positionOfMaxChild(position, childPosition))
 		{
-			if ((leftChildPosition < m_nextPosition && m_heap[leftChildPosition] > m_heap[position])
-				&& (rightChildPosition < m_nextPosition && m_heap[rightChildPosition] > m_heap[position]))
-			{
-				childPosition = leftChildPosition > rightChildPosition ? leftChildPosition : rightChildPosition;
-			}
-			else if (leftChildPosition < m_nextPosition && m_heap[leftChildPosition] > m_heap[position])
-			{
-				childPosition = leftChildPosition;
-			}
-			else if (rightChildPosition < m_nextPosition && m_heap[rightChildPosition] > m_heap[position])
-			{
-				childPosition = rightChildPosition;
-			}
-			else
-			{
-				break;
-			}
-
-			T temp = m_heap[childPosition];
-			m_heap[childPosition] = m_heap[position];
-			m_heap[position] = temp;
-
+			swapValues(childPosition, position);
 			position = childPosition;
-
-			leftChildPosition = getLeftPosition(position);
-			rightChildPosition = getRightPosition(position);
 		}
 	}
 
@@ -100,6 +107,16 @@ public:
 	MaxHeap(int capacity) {
 		m_capacity = capacity;
 		m_heap = new T[m_capacity];
+	}
+
+	T& operator[](int index) {
+
+		if (index < 0 || index > size() - 1)
+		{
+			throw std::invalid_argument("Index is outside of range");
+		}
+
+		return m_heap[index];
 	}
 
 	void insert(T data)
@@ -149,6 +166,30 @@ public:
 				moveDown(deletedPosition);
 			}
 		}
+	}
+
+	T getMax()
+	{
+		if (size() == 0)
+		{
+			throw std::out_of_range("Heap is empty");
+		}
+
+		return m_heap[0];
+	}
+
+	T removeMax()
+	{
+		if (size() == 0)
+		{
+			throw std::out_of_range("Heap is empty");
+		}
+
+		T maxValue = m_heap[0];
+		swapValues(0, size());
+		remove(maxValue);
+
+		return maxValue;
 	}
 
 	std::string toString()
