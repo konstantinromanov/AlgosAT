@@ -442,7 +442,7 @@ public:
 		if (!output.empty())
 		{
 			output.pop_back();
-		}		
+		}
 
 		return output;
 	}
@@ -451,7 +451,7 @@ public:
 	{
 		std::string output;
 		printPostorder(m_root, output);
-		
+
 		if (!output.empty())
 		{
 			output.pop_back();
@@ -464,13 +464,57 @@ public:
 	{
 		std::string output;
 		printInorder(m_root, output);
-		
+
 		if (!output.empty())
 		{
 			output.pop_back();
 		}
 
 		return output;
+	}
+
+	void drawTree()
+	{
+		bool exit = true;
+
+		if (m_root == nullptr)
+		{
+			return;
+		}
+
+		std::vector<Node*> currRow;
+		std::vector<Node*> prevRow;
+		prevRow.push_back(m_root);
+		int currRowLenght = 1;
+
+		do
+		{
+			for (size_t i = 0; i < currRowLenght; i++)
+			{
+				std::string output = ((prevRow[i] == nullptr) ? "_" : toString(prevRow[i]->data));
+				std::cout << output << " ";
+			}
+
+			std::cout << std::endl;
+
+			exit = false;
+			currRow.clear();
+
+			for (size_t i = 0; i < currRowLenght; i++)
+			{
+				if (prevRow[i] != NULL && prevRow[i]->left != nullptr || prevRow[i] != NULL && prevRow[i]->right != nullptr)
+				{
+					exit = true;
+				}
+
+				currRow.push_back(prevRow[i] != NULL ? prevRow[i]->left : NULL);
+				currRow.push_back(prevRow[i] != NULL ? prevRow[i]->right : NULL);
+			}
+
+			prevRow = currRow;
+			currRowLenght *= 2;
+
+		} while (exit);
 	}
 };
 

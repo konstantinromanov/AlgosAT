@@ -11,23 +11,6 @@
 #include "TestsMaxHeap.h"
 
 
-//template<typename T>
-//class HeapSort
-//{
-//public:
-//
-//	void ascOrder(T* arr, int size)
-//	{
-//		MaxHeap<T> heap = MaxHeap<T>(arr, size);
-//
-//		for (size_t i = size; i > 0; i--)
-//		{
-//			T val = heap.removeMax();
-//			//arr[i - 1] = val;
-//		}
-//	}
-//};
-
 bool isValidInput(std::string input)
 {
 	for (const char c : input)
@@ -43,6 +26,14 @@ bool isValidInput(std::string input)
 
 class App
 {
+
+private:
+
+	void PrintLine(int lenght)
+	{
+		std::cout << std::string(lenght, '-') << std::endl;
+	}
+
 public:
 
 	App()
@@ -54,14 +45,17 @@ public:
 	{
 		AvlTree<int> tree = AvlTree<int>();
 		tree.insert(2);
-		//tree.insert(1);
-		//tree.insert(4);
-		//tree.insert(40);
-		//tree.insert(25);
-		//tree.remove(20);
 
+		std::vector<std::string> menuItems = {
+		"Insert element",
+		"Remove element",
+		"Preorder",
+		"Inorder",
+		"Postorder"
+		};
+
+		std::string invalidInput = "Invalid input";
 		std::string treeOutput;
-
 		std::string userInput;
 		std::string treeElementInput;
 		int choice = 0;
@@ -71,56 +65,32 @@ public:
 
 		do
 		{
-
-			/*for (size_t i = 0; i < 3; i++)
-			{
-				std::cout << i + 1 << ' ' << "Inorder" << std::endl;
-			}*/
-			std::cout << "-------------------------------------------\n";
+			PrintLine(50);
 			std::cout << std::setw(10) << "Menu\n" << std::endl;
 
-			std::cout << 1 << ' ' << "Preorder" << std::endl;
-			std::cout << 2 << ' ' << "Inorder" << std::endl;
-			std::cout << 3 << ' ' << "Postorder" << std::endl;
-			std::cout << 4 << ' ' << "Insert element" << std::endl;
-			std::cout << 5 << ' ' << "Remove element" << std::endl;
+			for (size_t i = 0; i < menuItems.size(); i++)
+			{
+				std::cout << i + 1 << ' ' << menuItems.at(i) << std::endl;
+			}
 
-
-			std::cout << "-------------------------------------------\n";
+			PrintLine(50);
 			std::cout << "Choose operation (1 - 5) or 'E' to exit: ";
-
 
 			std::cin >> userInput;
 
 			if (!isValidInput(userInput))
 			{
-				std::cout << "Invalid input" << std::endl;
+				std::cout << invalidInput << std::endl;
 			}
 
 			try
 			{
-
 				choice = stoi(userInput);
 
 				switch (choice)
 				{
 
 				case 1:
-					std::cout << "Preorder: " << std::endl;
-					treeOutput = tree.preOrder();
-					std::cout << treeOutput << std::endl;
-					break;
-				case 2:
-					std::cout << "Inorder: " << std::endl;
-					treeOutput = tree.inOrder();
-					std::cout << treeOutput << std::endl;
-					break;
-				case 3:
-					std::cout << "Postorder: " << std::endl;
-					treeOutput = tree.postOrder();
-					std::cout << treeOutput << std::endl;
-					break;
-				case 4:
 					std::cout << "Enter a number to insert: ";
 					std::cin >> treeElementInput;
 
@@ -132,11 +102,11 @@ public:
 					}
 					catch (const std::exception&)
 					{
-						std::cout << treeElementInput << " is invalid input" << std::endl;
+						std::cout << treeElementInput << " is" << invalidInput << std::endl;
 					}
 
 					break;
-				case 5:
+				case 2:
 					std::cout << "Enter a number to remove: ";
 					std::cin >> treeElementInput;
 
@@ -155,15 +125,33 @@ public:
 					}
 					catch (const std::exception&)
 					{
-						std::cout << treeElementInput << " is invalid input" << std::endl;
+						std::cout << treeElementInput << " is" << invalidInput << std::endl;
 					}
 
 					break;
+				case 3:
+					std::cout << "Preorder: " << std::endl;
+					treeOutput = tree.preOrder();
+					std::cout << treeOutput << std::endl;
+
+					break;
+				case 4:
+					std::cout << "Inorder: " << std::endl;
+					treeOutput = tree.inOrder();
+					std::cout << treeOutput << std::endl;
+
+					break;
+				case 5:
+					std::cout << "Postorder: " << std::endl;
+					treeOutput = tree.postOrder();
+					std::cout << treeOutput << std::endl;
+
+					break;
 				default:
-					std::cout << "invalid input" << std::endl;
+					std::cout << invalidInput << std::endl;
+
 					break;
 				}
-
 			}
 			catch (const std::exception&)
 			{
@@ -173,29 +161,45 @@ public:
 				}
 				else
 				{
-					std::cout << "invalid input" << std::endl;
+					std::cout << invalidInput << std::endl;
 				}
 			}
 
 		} while (!exitProgram);
-
 	}
 };
 
 int main()
-{	
+{
 	// -----------------------------------------
 	//TestsMaxHeap testsMaxHeap = TestsMaxHeap();
 	//testsMaxHeap.runTests();
 
 	//TestsStack testsStack = TestsStack();
-	TestsAvlTree testsAvlTree = TestsAvlTree();
+	//TestsAvlTree testsAvlTree = TestsAvlTree();
 
 	//testsStack.runTests();
 	//testsAvlTree.runTests();
 
-	App app = App();
-	app.runApp();
+	//App app = App();
+	//app.runApp();
+
+	AvlTree<int> tree = AvlTree<int>();
+	tree.insert(38);
+	tree.insert(31);
+	tree.insert(68);
+	tree.insert(7);
+	tree.insert(33);
+	tree.insert(41);
+	tree.insert(6);
+	tree.insert(9);	
+
+	tree.drawTree();
+
+	tree.remove(68);
+
+	tree.drawTree();
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
