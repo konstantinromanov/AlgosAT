@@ -87,21 +87,62 @@ private:
 		}
 	}
 
-	void buildHeap(T* arr, int arrSize)
+	void buildHeap(T* arr, int arrSize, bool inPlace = false)
 	{
-		for (size_t i = 0; i < arrSize; i++)
+		if (inPlace)
 		{
-			insert(arr[i]);
+			for (size_t i = 0; i < arrSize; i++)
+			{
+				processNode(arr[i]);
+			}
 		}
+		else
+		{
+			for (size_t i = 0; i < arrSize; i++)
+			{
+				insert(arr[i]);
+			}
+		}
+	}
+
+	void processNode(T data)
+	{
+		if (m_nextPosition > 0 && m_heap[getParentPosition(m_nextPosition)] < data)
+		{
+			moveUp(m_nextPosition);
+		}
+
+		m_nextPosition++;
 	}
 
 public:
 
-	MaxHeap(T arr[], int arrSize, int capacity)
+	MaxHeap(T* arr, int arrSize)
 	{
+		m_capacity = arrSize;
+		m_heap = arr;
+		buildHeap(arr, arrSize, true);
+	}
+
+	MaxHeap(T* arr, int arrSize, int capacity)
+	{
+		if (capacity < arrSize)
+		{
+			throw std::invalid_argument("Capacity must be equal or more than Array Size.");
+		}
+
 		m_capacity = capacity;
-		m_heap = new T[m_capacity];
-		buildHeap(arr, arrSize);
+
+		if (arrSize == capacity)
+		{
+			m_heap = arr;
+			buildHeap(arr, arrSize, true);
+		}
+		else
+		{
+			m_heap = new T[m_capacity];
+			buildHeap(arr, arrSize);
+		}
 	}
 
 	MaxHeap(int capacity) {
@@ -127,13 +168,7 @@ public:
 		}
 
 		m_heap[m_nextPosition] = data;
-
-		if (m_nextPosition > 0 && m_heap[getParentPosition(m_nextPosition)] < data)
-		{
-			moveUp(m_nextPosition);
-		}
-
-		m_nextPosition++;
+		processNode(data);
 	}
 
 	void remove(T data)
@@ -186,8 +221,9 @@ public:
 		}
 
 		T maxValue = m_heap[0];
-		swapValues(0, size());
-		remove(maxValue);
+		swapValues(0, size() - 1);
+		m_nextPosition--;
+		moveDown(0);
 
 		return maxValue;
 	}

@@ -47,8 +47,8 @@ private:
 		if (node != nullptr)
 		{
 			printInorder(node->left, output);
-			std::stringstream ss("");
 			output.append(toString(node->data) + " ");
+			printInorder(node->right, output);
 		}
 	}
 
@@ -268,13 +268,20 @@ private:
 
 	void processNodeWithLeftChild(Node*& currentNode)
 	{
-		if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+		if (currentNode == m_root)
 		{
-			m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
+			m_root = currentNode->left == nullptr ? currentNode->right : currentNode->left;
 		}
 		else
 		{
-			m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->left;
+			if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+			{
+				m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
+			}
+			else
+			{
+				m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->left;
+			}
 		}
 
 		delete currentNode;
@@ -282,13 +289,20 @@ private:
 
 	void processNodeWithRightChild(Node*& currentNode)
 	{
-		if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+		if (currentNode == m_root)
 		{
-			m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->right;
+			m_root = currentNode->left == nullptr ? currentNode->right : currentNode->left;
 		}
 		else
 		{
-			m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
+			if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
+			{
+				m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->right;
+			}
+			else
+			{
+				m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
+			}
 		}
 
 		delete currentNode;
@@ -367,11 +381,11 @@ public:
 		}
 	}
 
-	void remove(T data)
+	bool remove(T data)
 	{
 		if (m_root == nullptr)
 		{
-			return;
+			return false;
 		}
 
 		Node* currentNode = m_root;
@@ -411,17 +425,24 @@ public:
 			else
 			{
 				isLeaf = true; // data was not found in structure.
+				return false;
 			}
 		}
 
 		m_pathNodes.clear();
+
+		return true;
 	}
 
 	std::string preOrder()
 	{
 		std::string output;
 		printPreorder(m_root, output);
-		output.pop_back();
+
+		if (!output.empty())
+		{
+			output.pop_back();
+		}		
 
 		return output;
 	}
@@ -430,7 +451,11 @@ public:
 	{
 		std::string output;
 		printPostorder(m_root, output);
-		output.pop_back();
+		
+		if (!output.empty())
+		{
+			output.pop_back();
+		}
 
 		return output;
 	}
@@ -439,7 +464,11 @@ public:
 	{
 		std::string output;
 		printInorder(m_root, output);
-		output.pop_back();
+		
+		if (!output.empty())
+		{
+			output.pop_back();
+		}
 
 		return output;
 	}
