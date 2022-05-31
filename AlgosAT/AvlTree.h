@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 template<typename T>
 class AvlTree
@@ -473,9 +474,21 @@ public:
 		return output;
 	}
 
+	std::string buildNodeStr(std::string number, int width)
+	{
+		std::string resultStr;
+		
+		int left = (width - number.length()) / 2;
+		int right = width - (left + number.length());
+
+		resultStr = std::string(left, ' ') + number + std::string(right, ' ');
+
+		return resultStr;
+	}
+
 	void drawTree()
 	{
-		bool exit = true;
+		bool stay = true;
 
 		if (m_root == nullptr)
 		{
@@ -486,35 +499,57 @@ public:
 		std::vector<Node*> prevRow;
 		prevRow.push_back(m_root);
 		int currRowLenght = 1;
+		int treeWidth = m_root->height;
+
+		int currLevel = 1;
+		int digits = 2;
+		int maxRowElem = pow(2, (m_root->height - 1));
+		int maxRowWidth = maxRowElem * digits + maxRowElem * 2;
 
 		do
 		{
+			int rowElem = pow(2, (currLevel - 1));
+			int elWidth = maxRowWidth / rowElem;			
+
 			for (size_t i = 0; i < currRowLenght; i++)
 			{
 				std::string output = ((prevRow[i] == nullptr) ? "_" : toString(prevRow[i]->data));
-				std::cout << output << " ";
+				std::string currNode = buildNodeStr(output, elWidth);
+				std::cout << currNode;
 			}
 
-			std::cout << std::endl;
+			std::cout << std::endl;			
 
-			exit = false;
+			currLevel++;			
+			stay = false;
 			currRow.clear();
 
 			for (size_t i = 0; i < currRowLenght; i++)
 			{
 				if (prevRow[i] != NULL && prevRow[i]->left != nullptr || prevRow[i] != NULL && prevRow[i]->right != nullptr)
 				{
-					exit = true;
+					stay = true;
 				}
 
 				currRow.push_back(prevRow[i] != NULL ? prevRow[i]->left : NULL);
 				currRow.push_back(prevRow[i] != NULL ? prevRow[i]->right : NULL);
 			}
 
+			if (stay)
+			{
+				for (size_t i = 0; i < currRowLenght; i++)
+				{
+					std::string currTreeLines = buildNodeStr("/\\", elWidth);
+					std::cout << currTreeLines;
+				}
+
+				std::cout << std::endl;
+			}
+
 			prevRow = currRow;
 			currRowLenght *= 2;
 
-		} while (exit);
+		} while (stay);
 	}
 };
 
