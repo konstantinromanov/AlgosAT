@@ -81,6 +81,8 @@ public:
 		int numbeToRemover{};
 		std::vector<int> numbers{};
 
+		std::cout << "This program creates AVL Tree and can perform simple operations on it" << std::endl << std::endl;
+
 		do
 		{
 			printLine(50);

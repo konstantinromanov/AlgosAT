@@ -15,14 +15,14 @@ int main()
 {
 	// --------------------- Tests ----------------------
 
-	TestsMaxHeap testsMaxHeap = TestsMaxHeap();
+	/*TestsMaxHeap testsMaxHeap = TestsMaxHeap();
 	testsMaxHeap.runTests();
 
 	TestsStack testsStack = TestsStack();
 	TestsAvlTree testsAvlTree = TestsAvlTree();
 
 	testsStack.runTests();
-	testsAvlTree.runTests();
+	testsAvlTree.runTests();*/
 
 	// ------------------- End of Tests -----------------
 
