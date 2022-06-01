@@ -149,14 +149,14 @@ private:
 			rotateRight(node);
 			break;
 		case RotationType::LeftRight: // left right case. 
-			rotateLeft(node + 1, true);
+			rotateLeft(node + 1);
 			rotateRight(node);
 			break;
 		case RotationType::RightRight: // right right case. 
 			rotateLeft(node);
 			break;
 		case RotationType::RightLeft: // right left case. 
-			rotateRight(node + 1, true);
+			rotateRight(node + 1);
 			rotateLeft(node);
 			break;
 		default:
@@ -164,7 +164,7 @@ private:
 		}
 	}
 
-	void rotateLeft(int i, bool isDoubleRotaion = false)
+	void rotateLeft(int i)
 	{
 		Node* y = m_pathNodes[i]->right;
 		Node* T2 = y->left;
@@ -175,20 +175,23 @@ private:
 		{
 			m_root = y;
 		}
-		else if (isDoubleRotaion)
-		{
-			m_pathNodes[i - 1]->left = y;
-		}
 		else
 		{
-			m_pathNodes[i - 1]->right = y;
+			if (m_pathNodes[i - 1]->right == m_pathNodes[i])
+			{
+				m_pathNodes[i - 1]->right = y;
+			}
+			else
+			{
+				m_pathNodes[i - 1]->left = y;
+			}
 		}
 
 		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
 		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 	}
 
-	void rotateRight(int i, bool isDoubleRotaion = false)
+	void rotateRight(int i)
 	{
 		Node* y = m_pathNodes[i]->left;
 		Node* T3 = y->right;
@@ -199,14 +202,17 @@ private:
 		{
 			m_root = y;
 		}
-		else if (isDoubleRotaion)
-		{
-			m_pathNodes[i - 1]->right = y;
-		}
 		else
 		{
-			m_pathNodes[i - 1]->left = y;
-		}
+			if (m_pathNodes[i - 1]->right == m_pathNodes[i])
+			{
+				m_pathNodes[i - 1]->right = y;
+			}
+			else
+			{
+				m_pathNodes[i - 1]->left = y;
+			}
+		}				
 
 		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
 		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;

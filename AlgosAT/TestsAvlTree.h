@@ -35,6 +35,8 @@ public:
 		remove_removeRootWithTwoChildrenSuccessorLeftLeaf_preorderTree();
 		remove_removeRootWithTwoChildrenSuccessorHasRightChild_preorderTree();
 		remove_removeRootWithLeftChild_preorderTree();
+		remove_removeRightLeafNodeParentFormTheLeft_preorderTree();
+		remove_removeLeftLeafNodeParentFromTheRight_preorderTree();
 	}
 
 	void insert_insertElementsWithBalancingNeeded1_preorderTree()
@@ -252,6 +254,46 @@ public:
 
 		std::string treePreorder = tree.preOrder();
 		bool treeIsCorrect = treePreorder == "1";
+
+		printTestResult(__func__, treeIsCorrect);
+	}
+
+	void remove_removeRightLeafNodeParentFormTheLeft_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+
+		int arr[] = { 34, 24, 45, 16, 32, 39, 47, 18, 30, 33, 38 };
+		int arrLenght = sizeof(arr) / sizeof(arr[0]);
+
+		for (size_t i = 0; i < arrLenght; i++)
+		{
+			tree.insert(arr[i]);
+		}
+
+		tree.remove(47);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "34 24 16 18 32 30 33 39 38 45";
+
+		printTestResult(__func__, treeIsCorrect);
+	}
+
+	void remove_removeLeftLeafNodeParentFromTheRight_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+
+		int arr[] = { 34, 24, 45, 16, 32, 39, 47, 33, 38, 40 };
+		int arrLenght = sizeof(arr) / sizeof(arr[0]);
+
+		for (size_t i = 0; i < arrLenght; i++)
+		{
+			tree.insert(arr[i]);
+		}
+
+		tree.remove(16);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "34 32 24 33 45 39 38 40 47";
 
 		printTestResult(__func__, treeIsCorrect);
 	}
