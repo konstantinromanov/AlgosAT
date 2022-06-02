@@ -164,58 +164,56 @@ private:
 		}
 	}
 
-	void rotateLeft(int i)
+	void connectToParent(Node* parentNode, Node* prevChildNode, Node* newChildNode)
 	{
-		Node* y = m_pathNodes[i]->right;
-		Node* T2 = y->left;
-		y->left = m_pathNodes[i];
-		m_pathNodes[i]->right = T2;
-
-		if (i == 0)
+		if (parentNode->right == prevChildNode)
 		{
-			m_root = y;
+			parentNode->right = newChildNode;
 		}
 		else
 		{
-			if (m_pathNodes[i - 1]->right == m_pathNodes[i])
-			{
-				m_pathNodes[i - 1]->right = y;
-			}
-			else
-			{
-				m_pathNodes[i - 1]->left = y;
-			}
+			parentNode->left = newChildNode;
+		}
+	}
+
+	void rotateLeft(int i)
+	{
+		Node* nodeToLift = m_pathNodes[i]->right;
+		Node* nodeToSwitch = nodeToLift->left;
+		nodeToLift->left = m_pathNodes[i];
+		m_pathNodes[i]->right = nodeToSwitch;
+
+		if (i == 0)
+		{
+			m_root = nodeToLift;
+		}
+		else
+		{
+			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
 		}
 
 		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
-		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
+		nodeToLift->height = maxHeight(getHeightOfNode(nodeToLift->left), getHeightOfNode(nodeToLift->right)) + 1;
 	}
 
 	void rotateRight(int i)
 	{
-		Node* y = m_pathNodes[i]->left;
-		Node* T3 = y->right;
-		y->right = m_pathNodes[i];
-		m_pathNodes[i]->left = T3;
+		Node* nodeToLift = m_pathNodes[i]->left;
+		Node* nodeToSwitch = nodeToLift->right;
+		nodeToLift->right = m_pathNodes[i];
+		m_pathNodes[i]->left = nodeToSwitch;
 
 		if (i == 0)
 		{
-			m_root = y;
+			m_root = nodeToLift;
 		}
 		else
 		{
-			if (m_pathNodes[i - 1]->right == m_pathNodes[i])
-			{
-				m_pathNodes[i - 1]->right = y;
-			}
-			else
-			{
-				m_pathNodes[i - 1]->left = y;
-			}
-		}				
+			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
+		}
 
 		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
-		y->height = maxHeight(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
+		nodeToLift->height = maxHeight(getHeightOfNode(nodeToLift->left), getHeightOfNode(nodeToLift->right)) + 1;
 	}
 
 	void processTwoChildrenNode(Node*& currentNode)
@@ -260,14 +258,7 @@ private:
 		}
 		else
 		{
-			if (m_pathNodes[m_pathNodes.size() - 1]->right == currentNode)
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->right = nullptr;
-			}
-			else
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->left = nullptr;
-			}
+			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, nullptr);
 		}
 
 		delete currentNode;
@@ -281,14 +272,7 @@ private:
 		}
 		else
 		{
-			if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->left;
-			}
-			else
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->left;
-			}
+			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, currentNode->right);
 		}
 
 		delete currentNode;
@@ -302,14 +286,7 @@ private:
 		}
 		else
 		{
-			if (m_pathNodes[m_pathNodes.size() - 1]->left == currentNode)
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->left = currentNode->right;
-			}
-			else
-			{
-				m_pathNodes[m_pathNodes.size() - 1]->right = currentNode->right;
-			}
+			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, currentNode->right);
 		}
 
 		delete currentNode;
@@ -343,6 +320,22 @@ private:
 		}
 
 		return output;
+	}
+
+	void updateMaxLengthOfNode(Node* node, int& number)
+	{
+		if (node != nullptr)
+		{
+			int currCharNumber = toString(node->data).length();			
+
+			if (currCharNumber > number)
+			{
+				number = currCharNumber;
+			}
+
+			updateMaxLengthOfNode(node->left, number);
+			updateMaxLengthOfNode(node->left, number);
+		}
 	}
 
 public:
@@ -483,7 +476,7 @@ public:
 	std::string buildNodeStr(std::string number, int width)
 	{
 		std::string resultStr;
-		
+
 		int left = (width - number.length()) / 2;
 		int right = width - (left + number.length());
 
@@ -508,25 +501,28 @@ public:
 		int treeWidth = m_root->height;
 
 		int currLevel = 1;
-		int digits = 2;
+		int lengthOfNodeString = 1;
+
+		updateMaxLengthOfNode(m_root, lengthOfNodeString);
+
 		int maxRowElem = pow(2, (m_root->height - 1));
-		int maxRowWidth = maxRowElem * digits + maxRowElem * 2;
+		int maxRowWidth = maxRowElem * lengthOfNodeString + maxRowElem * 2;
 
 		do
 		{
 			int rowElem = pow(2, (currLevel - 1));
-			int elWidth = maxRowWidth / rowElem;			
+			int elWidth = maxRowWidth / rowElem;
 
 			for (size_t i = 0; i < currRowLenght; i++)
 			{
-				std::string output = ((prevRow[i] == nullptr) ? "_" : toString(prevRow[i]->data));
+				std::string output = ((prevRow[i] == nullptr) ? " " : toString(prevRow[i]->data));
 				std::string currNode = buildNodeStr(output, elWidth);
 				std::cout << currNode;
 			}
 
-			std::cout << std::endl;			
+			std::cout << std::endl;
 
-			currLevel++;			
+			currLevel++;
 			stay = false;
 			currRow.clear();
 
@@ -545,8 +541,26 @@ public:
 			{
 				for (size_t i = 0; i < currRowLenght; i++)
 				{
-					std::string currTreeLines = buildNodeStr("/\\", elWidth);
-					std::cout << currTreeLines;
+					std::string currTreeLines;
+
+					if (prevRow[i]->left == nullptr && prevRow[i]->right == nullptr)
+					{
+						currTreeLines = " ";
+					}
+					else if (prevRow[i]->left == nullptr)
+					{
+						currTreeLines = "\\";
+					}
+					else if (prevRow[i]->right == nullptr)
+					{
+						currTreeLines = "/";
+					}
+					else
+					{
+						currTreeLines = "/\\";
+					}
+
+					std::cout << buildNodeStr(currTreeLines, elWidth);
 				}
 
 				std::cout << std::endl;
