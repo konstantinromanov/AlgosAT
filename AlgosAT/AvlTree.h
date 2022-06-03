@@ -80,7 +80,7 @@ private:
 		return getHeightOfNode(node->right) - getHeightOfNode(node->left);
 	}
 
-	void processChild(Node*& node, Node*& child)
+	void insertNodeAsChild(Node*& node, Node*& child)
 	{
 		child = node;
 		m_pathNodes.push_back(node);
@@ -192,8 +192,7 @@ private:
 			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
 		}
 
-		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
-		nodeToLift->height = maxHeight(getHeightOfNode(nodeToLift->left), getHeightOfNode(nodeToLift->right)) + 1;
+		updateHeightsAfterRotation(m_pathNodes[i], nodeToLift);
 	}
 
 	void rotateRight(int i)
@@ -212,11 +211,16 @@ private:
 			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
 		}
 
-		m_pathNodes[i]->height = maxHeight(getHeightOfNode(m_pathNodes[i]->left), getHeightOfNode(m_pathNodes[i]->right)) + 1;
-		nodeToLift->height = maxHeight(getHeightOfNode(nodeToLift->left), getHeightOfNode(nodeToLift->right)) + 1;
+		updateHeightsAfterRotation(m_pathNodes[i], nodeToLift);
 	}
 
-	void processTwoChildrenNode(Node*& currentNode)
+	void updateHeightsAfterRotation(Node* prevParent, Node* newParent)
+	{
+		prevParent->height = maxHeight(getHeightOfNode(prevParent->left), getHeightOfNode(prevParent->right)) + 1;
+		newParent->height = maxHeight(getHeightOfNode(newParent->left), getHeightOfNode(newParent->right)) + 1;
+	}
+
+	void deleteTwoChildrenNode(Node*& currentNode)
 	{
 		m_pathNodes.push_back(currentNode);
 		int removedNodeIndex = m_pathNodes.size() - 1;
@@ -250,7 +254,7 @@ private:
 		TwoChildren
 	};
 
-	void processNodeWithNoChildren(Node*& currentNode) {
+	void deleteNodeWithNoChildren(Node*& currentNode) {
 
 		if (currentNode == m_root)
 		{
@@ -264,7 +268,7 @@ private:
 		delete currentNode;
 	}
 
-	void processNodeWithLeftChild(Node*& currentNode)
+	void deleteNodeWithLeftChild(Node*& currentNode)
 	{
 		if (currentNode == m_root)
 		{
@@ -278,7 +282,7 @@ private:
 		delete currentNode;
 	}
 
-	void processNodeWithRightChild(Node*& currentNode)
+	void deleteNodeWithRightChild(Node*& currentNode)
 	{
 		if (currentNode == m_root)
 		{
@@ -326,7 +330,7 @@ private:
 	{
 		if (node != nullptr)
 		{
-			int currCharNumber = toString(node->data).length();			
+			int currCharNumber = toString(node->data).length();
 
 			if (currCharNumber > number)
 			{
@@ -369,7 +373,7 @@ public:
 
 				if (child == nullptr)
 				{
-					processChild(node, child);
+					insertNodeAsChild(node, child);
 					updateHeights();
 					isLeaf = true;
 				}
@@ -408,16 +412,16 @@ public:
 				switch (getNodeType(currentNode))
 				{
 				case ChildrenType::NoChildren:
-					processNodeWithNoChildren(currentNode);
+					deleteNodeWithNoChildren(currentNode);
 					break;
 				case ChildrenType::LeftChild:
-					processNodeWithLeftChild(currentNode);
+					deleteNodeWithLeftChild(currentNode);
 					break;
 				case ChildrenType::RightChild:
-					processNodeWithRightChild(currentNode);
+					deleteNodeWithRightChild(currentNode);
 					break;
 				case ChildrenType::TwoChildren:
-					processTwoChildrenNode(currentNode);
+					deleteTwoChildrenNode(currentNode);
 					break;
 				}
 
@@ -537,39 +541,41 @@ public:
 				currRow.push_back(prevRow[i] != NULL ? prevRow[i]->right : NULL);
 			}
 
-			if (stay)
+			if (!stay)
 			{
-				for (size_t i = 0; i < currRowLenght; i++)
+				break;
+			}
+
+			for (size_t i = 0; i < currRowLenght; i++)
+			{
+				std::string currTreeLines;
+
+				if (prevRow[i]->left == nullptr && prevRow[i]->right == nullptr)
 				{
-					std::string currTreeLines;
-
-					if (prevRow[i]->left == nullptr && prevRow[i]->right == nullptr)
-					{
-						currTreeLines = " ";
-					}
-					else if (prevRow[i]->left == nullptr)
-					{
-						currTreeLines = "\\";
-					}
-					else if (prevRow[i]->right == nullptr)
-					{
-						currTreeLines = "/";
-					}
-					else
-					{
-						currTreeLines = "/\\";
-					}
-
-					std::cout << buildNodeStr(currTreeLines, elWidth);
+					currTreeLines = " ";
+				}
+				else if (prevRow[i]->left == nullptr)
+				{
+					currTreeLines = "\\";
+				}
+				else if (prevRow[i]->right == nullptr)
+				{
+					currTreeLines = "/";
+				}
+				else
+				{
+					currTreeLines = "/\\";
 				}
 
-				std::cout << std::endl;
+				std::cout << buildNodeStr(currTreeLines, elWidth);
 			}
+
+			std::cout << std::endl;
 
 			prevRow = currRow;
 			currRowLenght *= 2;
 
-		} while (stay);
+		} while (true);
 	}
 };
 

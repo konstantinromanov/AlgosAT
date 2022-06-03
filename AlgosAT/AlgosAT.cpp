@@ -26,8 +26,8 @@ int main()
 
 	// ------------------- End of Tests -----------------
 
-	App app = App();
-	app.runApp();
+	//App app = App();
+	//app.runApp();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
