@@ -322,7 +322,7 @@ private:
 		return output;
 	}
 
-	void updateMaxLengthOfNode(Node* node, int& number)
+	int getMaxLengthOfNode(Node* node, int number)
 	{
 		if (node != nullptr)
 		{
@@ -333,9 +333,11 @@ private:
 				number = currCharNumber;
 			}
 
-			updateMaxLengthOfNode(node->left, number);
-			updateMaxLengthOfNode(node->left, number);
+			number = getMaxLengthOfNode(node->left, number);
+			number = getMaxLengthOfNode(node->right, number);
 		}
+
+		return number;
 	}
 
 public:
@@ -501,9 +503,7 @@ public:
 		int treeWidth = m_root->height;
 
 		int currLevel = 1;
-		int lengthOfNodeString = 1;
-
-		updateMaxLengthOfNode(m_root, lengthOfNodeString);
+		int lengthOfNodeString = getMaxLengthOfNode(m_root, 1);
 
 		int maxRowElem = pow(2, (m_root->height - 1));
 		int maxRowWidth = maxRowElem * lengthOfNodeString + maxRowElem * 2;
