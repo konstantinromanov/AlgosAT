@@ -344,6 +344,18 @@ private:
 		return number;
 	}
 
+	std::string buildNodeStr(std::string number, int width)
+	{
+		std::string resultStr;
+
+		int left = (width - number.length()) / 2;
+		int right = width - (left + number.length());
+
+		resultStr = std::string(left, ' ') + number + std::string(right, ' ');
+
+		return resultStr;
+	}
+
 public:
 
 	void insert(T data)
@@ -477,18 +489,6 @@ public:
 		}
 
 		return output;
-	}
-
-	std::string buildNodeStr(std::string number, int width)
-	{
-		std::string resultStr;
-
-		int left = (width - number.length()) / 2;
-		int right = width - (left + number.length());
-
-		resultStr = std::string(left, ' ') + number + std::string(right, ' ');
-
-		return resultStr;
 	}
 
 	void drawTree()
