@@ -550,7 +550,7 @@ public:
 			{
 				std::string currTreeLines;
 
-				if (prevRow[i]->left == nullptr && prevRow[i]->right == nullptr)
+				if (prevRow[i] == NULL || prevRow[i]->left == nullptr && prevRow[i]->right == nullptr)
 				{
 					currTreeLines = " ";
 				}
