@@ -19,10 +19,10 @@ int main()
 	//testsMaxHeap.runTests();
 
 	//TestsStack testsStack = TestsStack();
-	//TestsAvlTree testsAvlTree = TestsAvlTree();
+	TestsAvlTree testsAvlTree = TestsAvlTree();
 
 	//testsStack.runTests();
-	//testsAvlTree.runTests();
+	testsAvlTree.runTests();
 
 	// ------------------- End of Tests -----------------
 

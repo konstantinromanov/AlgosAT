@@ -127,91 +127,84 @@ private:
 
 	RotationType getRotationType(Node* node, Direction direction)
 	{
-		RotationType output;
+		RotationType type;
 
 		if (direction == Direction::Left)
 		{
-			output = getBalance(node->left) <= 0 ? RotationType::LeftLeft : RotationType::LeftRight;
+			type = getBalance(node->left) <= 0 ? RotationType::LeftLeft : RotationType::LeftRight;
 		}
 		else
 		{
-			output = getBalance(node->right) >= 0 ? RotationType::RightRight : RotationType::RightLeft;
+			type = getBalance(node->right) >= 0 ? RotationType::RightRight : RotationType::RightLeft;
 		}
 
-		return output;
+		return type;
 	}
 
-	void processBalancing(int node, RotationType rotation)
+	void processBalancing(int indexOfCurrentNode, RotationType rotation)
 	{
 		switch (rotation)
 		{
 		case RotationType::LeftLeft: // left left case. 
-			rotateRight(node);
+			rotateRight(indexOfCurrentNode);
 			break;
 		case RotationType::LeftRight: // left right case. 
-			rotateLeft(node + 1);
-			rotateRight(node);
+			rotateLeft(indexOfCurrentNode + 1);
+			rotateRight(indexOfCurrentNode);
 			break;
 		case RotationType::RightRight: // right right case. 
-			rotateLeft(node);
+			rotateLeft(indexOfCurrentNode);
 			break;
 		case RotationType::RightLeft: // right left case. 
-			rotateRight(node + 1);
-			rotateLeft(node);
+			rotateRight(indexOfCurrentNode + 1);
+			rotateLeft(indexOfCurrentNode);
 			break;
 		default:
 			break;
 		}
 	}
 
-	void connectToParent(Node* parentNode, Node* prevChildNode, Node* newChildNode)
+	void rotateLeft(int indexOfCurrentNode)
 	{
-		if (parentNode->right == prevChildNode)
-		{
-			parentNode->right = newChildNode;
-		}
-		else
-		{
-			parentNode->left = newChildNode;
-		}
-	}
-
-	void rotateLeft(int i)
-	{
-		Node* nodeToLift = m_pathNodes[i]->right;
+		Node* nodeToLift = m_pathNodes[indexOfCurrentNode]->right;
 		Node* nodeToSwitch = nodeToLift->left;
-		nodeToLift->left = m_pathNodes[i];
-		m_pathNodes[i]->right = nodeToSwitch;
+		nodeToLift->left = m_pathNodes[indexOfCurrentNode];
+		m_pathNodes[indexOfCurrentNode]->right = nodeToSwitch;
 
-		if (i == 0)
-		{
-			m_root = nodeToLift;
-		}
-		else
-		{
-			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
-		}
-
-		updateHeightsAfterRotation(m_pathNodes[i], nodeToLift);
+		connectToParent(indexOfCurrentNode, nodeToLift);
+		updateHeightsAfterRotation(m_pathNodes[indexOfCurrentNode], nodeToLift);
 	}
 
-	void rotateRight(int i)
+	void rotateRight(int indexOfCurrentNode)
 	{
-		Node* nodeToLift = m_pathNodes[i]->left;
+		Node* nodeToLift = m_pathNodes[indexOfCurrentNode]->left;
 		Node* nodeToSwitch = nodeToLift->right;
-		nodeToLift->right = m_pathNodes[i];
-		m_pathNodes[i]->left = nodeToSwitch;
+		nodeToLift->right = m_pathNodes[indexOfCurrentNode];
+		m_pathNodes[indexOfCurrentNode]->left = nodeToSwitch;
 
-		if (i == 0)
+		connectToParent(indexOfCurrentNode, nodeToLift);
+		updateHeightsAfterRotation(m_pathNodes[indexOfCurrentNode], nodeToLift);
+	}
+
+	void connectToParent(int indexOfCurrentNode, Node* nodeToLift)
+	{
+		if (m_pathNodes[indexOfCurrentNode] == m_root)
 		{
 			m_root = nodeToLift;
 		}
 		else
 		{
-			connectToParent(m_pathNodes[i - 1], m_pathNodes[i], nodeToLift);
-		}
+			Node* parentNode = m_pathNodes[indexOfCurrentNode - 1];
 
-		updateHeightsAfterRotation(m_pathNodes[i], nodeToLift);
+			if (parentNode->right == m_pathNodes[indexOfCurrentNode])
+			{
+				parentNode->right = nodeToLift;
+			}
+			else
+			{
+				parentNode->left = nodeToLift;
+			}
+		}
 	}
 
 	void updateHeightsAfterRotation(Node* prevParent, Node* newParent)
@@ -220,7 +213,7 @@ private:
 		newParent->height = maxHeight(getHeightOfNode(newParent->left), getHeightOfNode(newParent->right)) + 1;
 	}
 
-	void deleteTwoChildrenNode(Node*& currentNode)
+	void deleteTwoChildrenNode(Node* currentNode)
 	{
 		m_pathNodes.push_back(currentNode);
 		int removedNodeIndex = m_pathNodes.size() - 1;
@@ -245,53 +238,12 @@ private:
 		m_pathNodes[removedNodeIndex]->data = currentNode->data;
 		delete currentNode;
 	}
-
-	enum class ChildrenType
+		
+	void deleteNodeWithOneOrNoChild(Node* currentNode, Node* nodeToLift = nullptr)
 	{
-		NoChildren,
-		LeftChild,
-		RightChild,
-		TwoChildren
-	};
-
-	void deleteNodeWithNoChildren(Node*& currentNode) {
-
-		if (currentNode == m_root)
-		{
-			m_root = nullptr;
-		}
-		else
-		{
-			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, nullptr);
-		}
-
-		delete currentNode;
-	}
-
-	void deleteNodeWithLeftChild(Node*& currentNode)
-	{
-		if (currentNode == m_root)
-		{
-			m_root = currentNode->left == nullptr ? currentNode->right : currentNode->left;
-		}
-		else
-		{
-			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, currentNode->right);
-		}
-
-		delete currentNode;
-	}
-
-	void deleteNodeWithRightChild(Node*& currentNode)
-	{
-		if (currentNode == m_root)
-		{
-			m_root = currentNode->left == nullptr ? currentNode->right : currentNode->left;
-		}
-		else
-		{
-			connectToParent(m_pathNodes[m_pathNodes.size() - 1], currentNode, currentNode->right);
-		}
+		m_pathNodes.push_back(currentNode);
+		connectToParent(m_pathNodes.size() - 1, nodeToLift);
+		m_pathNodes.pop_back();
 
 		delete currentNode;
 	}
@@ -302,28 +254,36 @@ private:
 		currentNode = direction == Direction::Left ? currentNode->left : currentNode->right;
 	}
 
+	enum class ChildrenType
+	{
+		NoChildren,
+		LeftChild,
+		RightChild,
+		TwoChildren
+	};
+
 	ChildrenType getNodeType(Node* currentNode)
 	{
-		ChildrenType output;
+		ChildrenType type;
 
 		if (currentNode->left == nullptr && currentNode->right == nullptr)
 		{
-			output = ChildrenType::NoChildren;
+			type = ChildrenType::NoChildren;
 		}
 		else if (currentNode->left == nullptr)
 		{
-			output = ChildrenType::RightChild;
+			type = ChildrenType::RightChild;
 		}
 		else if (currentNode->right == nullptr)
 		{
-			output = ChildrenType::LeftChild;
+			type = ChildrenType::LeftChild;
 		}
 		else
 		{
-			output = ChildrenType::TwoChildren;
+			type = ChildrenType::TwoChildren;
 		}
 
-		return output;
+		return type;
 	}
 
 	int getMaxLengthOfNode(Node* node, int number)
@@ -407,9 +367,8 @@ public:
 		}
 
 		Node* currentNode = m_root;
-		bool isLeaf = false;
 
-		while (!isLeaf)
+		while (true)
 		{
 			if (data < currentNode->data && currentNode->left != nullptr)
 			{
@@ -424,13 +383,13 @@ public:
 				switch (getNodeType(currentNode))
 				{
 				case ChildrenType::NoChildren:
-					deleteNodeWithNoChildren(currentNode);
+					deleteNodeWithOneOrNoChild(currentNode);
 					break;
 				case ChildrenType::LeftChild:
-					deleteNodeWithLeftChild(currentNode);
+					deleteNodeWithOneOrNoChild(currentNode, currentNode->left);
 					break;
 				case ChildrenType::RightChild:
-					deleteNodeWithRightChild(currentNode);
+					deleteNodeWithOneOrNoChild(currentNode, currentNode->right);
 					break;
 				case ChildrenType::TwoChildren:
 					deleteTwoChildrenNode(currentNode);
@@ -438,12 +397,11 @@ public:
 				}
 
 				updateHeights();
-				isLeaf = true;
+				break;
 			}
 			else
 			{
-				isLeaf = true; // data was not found in structure.
-				return false;
+				return false; // data was not found in structure.
 			}
 		}
 

@@ -37,6 +37,7 @@ public:
 		remove_removeRootWithLeftChild_preorderTree();
 		remove_removeRightLeafNodeParentFormTheLeft_preorderTree();
 		remove_removeLeftLeafNodeParentFromTheRight_preorderTree();
+		remove_removeNodeWithLeftChild_preorderTree();		
 	}
 
 	void insert_insertElementsWithBalancingNeeded1_preorderTree()
@@ -297,5 +298,25 @@ public:
 
 		printTestResult(__func__, treeIsCorrect);
 	}
+
+	void remove_removeNodeWithLeftChild_preorderTree()
+	{
+		AvlTree<int> tree = AvlTree<int>();
+
+		int arr[] = { 1, 2, 4, 3 };
+		int arrLenght = sizeof(arr) / sizeof(arr[0]);
+
+		for (size_t i = 0; i < arrLenght; i++)
+		{
+			tree.insert(arr[i]);
+		}
+
+		tree.remove(4);
+
+		std::string treePreorder = tree.preOrder();
+		bool treeIsCorrect = treePreorder == "2 1 3";
+
+		printTestResult(__func__, treeIsCorrect);
+	}	
 };
 
